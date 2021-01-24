@@ -8,7 +8,7 @@
 WP_OWNER=nginx # <-- wordpress owner
 WP_GROUP=nginx # <-- wordpress group
 WP_ROOT=$1 # <-- wordpress root directory
-WS_GROUP=root # <-- webserver group
+WS_GROUP=nginx # <-- webserver group
 
 # reset to safe defaults
 find ${WP_ROOT} -exec chown ${WP_OWNER}:${WP_GROUP} {} \;
