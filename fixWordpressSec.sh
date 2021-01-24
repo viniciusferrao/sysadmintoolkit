@@ -25,8 +25,8 @@ find ${WP_ROOT}/wp-content -type f -exec chmod 664 {} \;
 # Setup SELinux
 semanage fcontext -a -t httpd_sys_content_t "$WP_ROOT(/.*)?"
 
-# Fix uploads
-semanage fcontext -a -t httpd_sys_rw_content_t "$WP_ROOT/wp-content/uploads(/.*)?"
+# Fix wp-content
+semanage fcontext -a -t httpd_sys_rw_content_t "$WP_ROOT/wp-content(/.*)?"
 
 # Fix wp-config
 semanage fcontext -a -t httpd_sys_rw_content_t "$WP_ROOT/wp-config.php"
