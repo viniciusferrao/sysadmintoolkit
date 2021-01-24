@@ -112,6 +112,9 @@ cat >> $WWW_PATH/$SITE_URL/wp-config.php << EOF
  */
 define('WP_DEBUG', false);
 
+/** Enable proper support for updates without FTP/FTPS. */
+define('FS_METHOD','direct');
+
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
