@@ -129,8 +129,8 @@ EOF
 echo Setting up SELinux labels
 semanage fcontext -a -t httpd_sys_content_t "$WWW_PATH/$SITE_URL(/.*)?"
 
-# Fix uploads
-semanage fcontext -a -t httpd_sys_rw_content_t "$WWW_PATH/$SITE_URL/wp-content/uploads(/.*)?"
+# Fix wp-content
+semanage fcontext -a -t httpd_sys_rw_content_t "$WWW_PATH/$SITE_URL/wp-content(/.*)?"
 
 # Fix wp-config
 semanage fcontext -a -t httpd_sys_rw_content_t "$WWW_PATH/$SITE_URL/wp-config.php"
