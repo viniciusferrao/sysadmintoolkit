@@ -5,6 +5,11 @@
 #
 # Author: Michael Conigliaro <mike [at] conigliaro [dot] org>
 #
+if [ -z "$1" ]; then
+    echo "Usage: $0 <wordpress_root_directory>" >&2
+    exit 1
+fi
+
 WP_OWNER=nginx # <-- wordpress owner
 WP_GROUP=nginx # <-- wordpress group
 WP_ROOT=$1 # <-- wordpress root directory
