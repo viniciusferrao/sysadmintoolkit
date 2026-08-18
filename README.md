@@ -1,13 +1,13 @@
 # sysadmintoolkit
 Just storing quality questionable tools for sysAdmin work
 
-## Site provisioning
+## Install a site
 
-* `installSiteWordpress.sh <fqdn> [mysql_root_password]` — database, WordPress, wp-config.php, SELinux labels, TLS certificate and nginx vhost
-* `enableSite*.sh <fqdn>` — TLS certificate and nginx vhost for the given stack
-* `dumpWordpress.sh` / `dumpJoomla.sh` — site dumps
+* `installSiteWordpress.sh <fqdn> [mysql_root_password]` — Creates the database and installs WordPress. Writes wp-config.php and the nginx configuration. Gets the TLS certificate. Sets the SELinux labels.
+* `enableSite*.sh <fqdn>` — Gets the TLS certificate and writes the nginx configuration for the given stack.
+* `dumpWordpress.sh` / `dumpJoomla.sh` — Makes a dump of the site.
 
-## Permissions
+## Set permissions
 
-* `fixWordpressSec.sh <wordpress_root_directory>` — reapplies the canonical permission scheme: root-owned code read-only for the site's php-fpm user (`wrdprs_<site>`), uploads owned by that user, nginx read via setgid group plus a named ACL entry, `wp-config.php` unreadable by nginx. Re-runnable; preserves webmaster grants.
-* `grantSiteAccess.sh <fqdn> <uid|username> [--revoke]` — gives a webmaster read/write on one site via POSIX ACLs, with default ACLs so new files inherit the grant. Made for users coming in over the NFSv3 mount on the login server: pass the numeric UID (`id -u <user>` there) since AD users may not resolve on the web server. On WordPress sites it also sets `FS_CHMOD_FILE`/`FS_CHMOD_DIR` so files WordPress writes keep the ACL effective.
+* `fixWordpressSec.sh <wordpress_root_directory>` — Sets the standard permissions on one site. Root owns the code. The php-fpm user (`wrdprs_<site>`) can only read the code. The php-fpm user owns `wp-content/uploads`. nginx can read all files, but not `wp-config.php`. You can run this script more than one time. It keeps the webmaster ACL entries.
+* `grantSiteAccess.sh <fqdn> <uid|username> [--revoke]` — Gives one webmaster read and write access to one site through POSIX ACLs. New files get the same access from the default ACLs. For users on the NFS mount, get the numeric UID on the login server with `id -u <user>`. On WordPress sites, the script also sets `FS_CHMOD_FILE` and `FS_CHMOD_DIR` in wp-config.php. Use `--revoke` to remove the access.
