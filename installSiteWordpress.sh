@@ -16,11 +16,30 @@ PASSWORD=`cat /dev/urandom | tr -dc '0-9a-zA-Z!@#$%^&*_+-' | head -c 16`
 echo "Generated database password: $PASSWORD"
 
 MYSQL_PASSWORD="$2"
+if [ -z "$MYSQL_PASSWORD" ]; then
+	printf "MariaDB/MySQL root password: "
+	stty -echo
+	read MYSQL_PASSWORD
+	stty echo
+	echo
+fi
 
+# Passwords go through a temporary defaults file and stdin instead of
+# command line arguments, so they never show up in the process list
 echo "Creating MariaDB/MySQL databases"
-mysql -u root -p$MYSQL_PASSWORD -e "create database wrdprs_$NON_FQDN"
-mysql -u root -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON wrdprs_$NON_FQDN.* TO \"usr_$NON_FQDN\"@\"localhost\" IDENTIFIED BY \"$PASSWORD\""
-mysql -u root -p$MYSQL_PASSWORD -e "FLUSH PRIVILEGES"
+MYSQL_DEFAULTS=`mktemp`
+chmod 600 $MYSQL_DEFAULTS
+cat > $MYSQL_DEFAULTS << EOF
+[client]
+user=root
+password=$MYSQL_PASSWORD
+EOF
+mysql --defaults-extra-file=$MYSQL_DEFAULTS << EOF
+CREATE DATABASE wrdprs_$NON_FQDN;
+GRANT ALL PRIVILEGES ON wrdprs_$NON_FQDN.* TO 'usr_$NON_FQDN'@'localhost' IDENTIFIED BY '$PASSWORD';
+FLUSH PRIVILEGES;
+EOF
+rm -f $MYSQL_DEFAULTS
 
 # Install Wordpress on $WWW_PATH
 SITE_URL=$1
@@ -114,6 +133,11 @@ define('WP_DEBUG', false);
 
 /** Enable proper support for updates without FTP/FTPS. */
 define('FS_METHOD','direct');
+
+/** ACL-friendly creation modes: keep group-class rw so webmaster ACLs
+ *  (see grantSiteAccess.sh) stay effective on files WordPress writes. */
+define('FS_CHMOD_FILE', 0660);
+define('FS_CHMOD_DIR', 02770);
 
 /* That's all, stop editing! Happy blogging. */
 
